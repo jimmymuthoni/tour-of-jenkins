@@ -1,17 +1,7 @@
-# Day 3: What is Jenkins? Jenkins Installation Options, Docker Setup & Freestyle Job
-
-## Video reference for Day 3 is the following:
-
-[![Watch the video](https://img.youtube.com/vi/woZ1fsholS4/maxresdefault.jpg)](https://www.youtube.com/watch?v=woZ1fsholS4&ab_channel=CloudWithVarJosh)
+#### Day 3: What is Jenkins? Jenkins Installation Options, Docker Setup & Freestyle Job
 
 
----
-## ⭐ Support the Project  
-If this **repository** helps you, give it a ⭐ to show your support and help others discover it! 
-
----
-
-## Table of Contents
+#### Table of Contents
 
 * [Introduction](#introduction)  
 * [What is Jenkins](#what-is-jenkins)  
@@ -40,13 +30,13 @@ If this **repository** helps you, give it a ⭐ to show your support and help ot
 
 ---
 
-## Introduction
+#### Introduction
 
 Welcome to **Day 3**. Today we move from “why CI/CD” to **hands-on with Jenkins**: we’ll set up Jenkins (starting with a **Docker lab**), explain **installation options** (Docker, VM/Bare Metal, Kubernetes, Cloud Marketplace, CloudBees), and build your **first Freestyle job** to learn where commands run, how artifacts work, and how tools like Git/Maven are provided. By the end, you’ll have a working Jenkins you can reuse in later sessions.
 
 ---
 
-## What is Jenkins
+#### What is Jenkins
 
 ![Alt text](/images/3b.png)
 
@@ -93,14 +83,14 @@ Jenkins is a **community-governed** project under the **Continuous Delivery Foun
 
 ---
 
-## **Jenkins Installation Options (Local to Enterprise)**
+#### **Jenkins Installation Options (Local to Enterprise)**
 
 Jenkins can be set up in multiple ways—**from laptop labs to enterprise clusters**—depending on your needs for **speed, control, and scale**. The sections below outline each method (Docker, VM/Bare Metal, Kubernetes, Cloud Marketplace, CloudBees), when to use it, and key trade-offs.
 
 ![Alt text](/images/3c.png)
 ---
 
-### 1) Docker Container
+#### 1) Docker Container
 
 **Fast setup:** Pull the official `jenkins/jenkins:lts` image and you’re running in minutes; ideal for labs, POCs, and local demos without provisioning VMs.
 **Portable:** The container runs consistently across macOS, Linux, and Windows hosts (Docker Desktop), reducing “works on my machine” drift.
@@ -114,7 +104,7 @@ Jenkins can be set up in multiple ways—**from laptop labs to enterprise cluste
 
 ---
 
-### 2) VM / Bare Metal
+#### 2) VM / Bare Metal
 
 **Traditional install:** Install via `apt/yum` packages or run the WAR as a service; predictable for enterprises with locked-down hosts and CM tools (Ansible/Chef).
 **Full control:** You manage OS packages, JVM flags, file descriptors, and disk layouts; helpful for compliance audits and tuning.
@@ -138,7 +128,7 @@ sudo systemctl enable --now jenkins
 
 ---
 
-### 3) Kubernetes (Jenkins on K8s)
+#### 3) Kubernetes (Jenkins on K8s)
 
 **Cloud-native:** Run the controller as a Deployment/StatefulSet; ingress, storage, and configs are standard K8s resources, making ops uniform with other apps.
 **Scalable:** Spin up **ephemeral agent Pods** per build via the Kubernetes plugin; scale to zero idle agents and pay only for active builds.
@@ -169,7 +159,7 @@ helm upgrade --install jenkins jenkins/jenkins \
 
 ---
 
-## 4) Cloud Marketplace Images (AWS/Azure/GCP)
+#### 4) Cloud Marketplace Images (AWS/Azure/GCP)
 
 **One-click deploy:** Prebuilt VM images/templates spin up Jenkins fast—great for pilots, PoCs, or lift-and-shift.
 **Cloud-integrated:** Easier wiring to managed disks, load balancers, logging/monitoring; many offers include hardened baselines.
@@ -184,7 +174,7 @@ helm upgrade --install jenkins jenkins/jenkins \
 
 ---
 
-## 5) CloudBees Jenkins (Enterprise CI)
+#### 5) CloudBees Jenkins (Enterprise CI)
 
 **Enterprise edition:** **Commercial distribution built on Jenkins**, with **SLAs**, curated plugin baselines, and long-term maintenance.
 **Advanced features:** Governance, team segmentation, **RBAC at scale**, controller/agent fleet management, compliance tooling, and **Operations Center**.
@@ -203,7 +193,7 @@ helm upgrade --install jenkins jenkins/jenkins \
 
 ---
 
-### Quick chooser (when to pick what)
+#### Quick chooser (when to pick what)
 
 * **Docker:** Fast start for labs/dev laptops/small teams; single-host by default (Compose ≠ cluster). Scale via external agents or move to K8s later.
 * **VM / Bare Metal:** Regulated/on-prem with full OS control and stable scale; predictable, but scaling/upgrades are manual.
@@ -214,7 +204,7 @@ helm upgrade --install jenkins jenkins/jenkins \
 ---
 
 
-## Lab setup: Jenkins in Docker
+#### Lab setup: Jenkins in Docker
 
 We’ll learn the **basics on a single-node Jenkins running in Docker**—fast to spin up, easy to reset.
 When we switch to **projects and production patterns**, we’ll use **VM-based** and **Kubernetes-based** installs.
@@ -228,7 +218,7 @@ docker run -d \
   -p 8080:8080 \
   -p 50000:50000 \
   -v jenkins_home:/var/jenkins_home \
-  -e TZ=Asia/Kolkata \
+  -e TZ=Africa/Nairobi \
   jenkins/jenkins:lts
 ```
 
@@ -245,13 +235,13 @@ docker run -d \
 
 > Note: We **don’t** set `-u root` here—Jenkins runs as the default non-root user
 
-### First-time setup
+#### First-time setup
 
 1. `docker logs jenkins` → copy **initialAdminPassword**.
 2. Open `http://localhost:8080` → install **recommended plugins**.
 3. Create admin user → you’re ready to create jobs/pipelines.
 
-### Handy commands
+#### Handy commands
 
 * Exec shell: `docker exec -it jenkins bash`
 * Restart: `docker restart jenkins`
@@ -259,7 +249,7 @@ docker run -d \
 
 ---
 
-### Understanding `/var/jenkins_home` (your Jenkins **state**)
+#### Understanding `/var/jenkins_home` (your Jenkins **state**)
 
 This path holds the **controller’s persisted state**—not the build “data plane”. Everything the controller needs lives here: **jobs/pipelines, build history/logs, plugins, global config, credentials, node definitions, UI settings**, etc. Keep it **outside the container FS** so a container crash/recreate doesn’t lose data.
 
@@ -281,7 +271,7 @@ If the container dies or is replaced, reattach the same volume and Jenkins resto
 
 ---
 
-## Who uses Jenkins: roles and responsibilities
+#### Who uses Jenkins: roles and responsibilities
 
 ![Alt text](/images/3d.png)
 
@@ -299,21 +289,21 @@ If the container dies or is replaced, reattach the same volume and Jenkins resto
 
 ---
 
-## First steps with Jenkins jobs (start with Freestyle)
+#### First steps with Jenkins jobs (start with Freestyle)
 
 When you click **New Item**, Jenkins offers several job types (Pipeline, Multibranch Pipeline, Freestyle, Folder, etc.). We’ll start with the **simplest, most beginner-friendly option: Freestyle**. In this demo, we’ll create **one Freestyle job** and progressively edit it to learn the essentials: where commands run, how workspaces and environment variables behave, saving **artifacts**, connecting **SCM (Git)**, understanding **tool requirements** (Git/Maven/Helm), and adding **parameters** to make the job configurable.
 
 
 ---
 
-### Step 0 — Create the job
+#### Step 0 — Create the job
 
 * **New Item → Freestyle project → Name:** `intro-freestyle` → **OK**.
 * For now, leave SCM = *None*.
 
 ---
 
-### Step 1 — Where do commands run? (Execute Shell)
+#### Step 1 — Where do commands run? (Execute Shell)
 
 **Build → Add build step → Execute shell:**
 
@@ -355,7 +345,7 @@ printenv | sort
 
 ---
 
-### Step 2 — Produce and archive an artifact
+#### Step 2 — Produce and archive an artifact
 
 * **Edit job → Build → Execute shell (append):**
 
@@ -370,7 +360,7 @@ printenv | sort
 
 ---
 
-### Step 3 — SCM checkout (Git) + tool requirements
+#### Step 3 — SCM checkout (Git) + tool requirements
 
 * **Edit job → Source Code Management → Git**
 
@@ -410,7 +400,7 @@ printenv | sort
   **Manage Jenkins → Tools → Maven installations → Add Maven**
 
   * **Name:** `M3`
-  * **Install automatically:** ✅ pick a version
+  * **Install automatically:** pick a version
 * **Freestyle job:**
   **Add build step → Invoke top-level Maven targets**
 
@@ -452,7 +442,7 @@ printenv | sort
 
 ---
 
-### Which to pick (simple rule)
+#### Which to pick (simple rule)
 
 * **Learning/labs or teams seeking reproducibility:** **Use Tools** (A). Pick versions per job; no OS tinkering.
 * **Quick local demo or a one-off node:** **OS install** (B) is fine—just know it doesn’t scale as cleanly.
@@ -465,7 +455,7 @@ printenv | sort
 
 ---
 
-### Key points to remember
+#### Key points to remember
 
 * **Node of execution:** Freestyle steps run on the assigned node (today = controller). For real projects, attach **agents** (VMs/containers/K8s Pods) with the required toolchain.
 * **Tools live on nodes:** If the node lacks **Git/Maven/Helm**, commands will fail. Use **Manage Jenkins → Tools** or provide an agent image/VM that has them.
@@ -483,7 +473,7 @@ You now have a **running Jenkins** (Docker lab), understand **when to choose** e
 
 ---
 
-## References
+#### References
 
 * Jenkins docs and Pipeline tour: [Jenkins Documentation](https://www.jenkins.io/doc/) • [Pipeline (Jenkinsfile) Tour](https://www.jenkins.io/doc/pipeline/tour/)
 * Installing and operating Jenkins: [Installing Jenkins](https://www.jenkins.io/doc/book/installing/)
